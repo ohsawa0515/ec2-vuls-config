@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,11 @@ type ServerConfig struct {
 	Host string
 }
 
+type Tag struct {
+	Name   string
+	Values string
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "ec2-vuls-config"
@@ -31,7 +37,8 @@ func main() {
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "tags, t", // TODO: Name:string,Value:string
+			Name:  "filters, f",
+			Value: "Name=tag:Vuls-Scan,Values=True",
 			Usage: "Filtering ec2 tag",
 		},
 		cli.StringFlag{
@@ -42,6 +49,19 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
+
+		// Parse filter
+		var tag Tag
+		for _, set := range strings.Split(c.String("filters"), ",") {
+			key := strings.Split(set, "=")
+			switch key[0] {
+			case "Name":
+				tag.Name = key[1]
+			case "Values":
+				tag.Values = key[1]
+			}
+		}
+
 		sess, err := session.NewSessionWithOptions(session.Options{})
 		if err != nil {
 			return cli.NewExitError(err.Error(), 1)
@@ -56,9 +76,9 @@ func main() {
 					},
 				},
 				{
-					Name: aws.String("tag:Vuls-Scan"),
+					Name: aws.String(tag.Name),
 					Values: []*string{
-						aws.String("True"),
+						aws.String(tag.Values),
 					},
 				},
 			},
