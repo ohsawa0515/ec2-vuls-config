@@ -45,7 +45,7 @@ Vuls-Scan: True
 
 ### 5. Prepare config.toml for Vuls scan
 
-See [README of Vuls](https://github.com/future-architect/vuls/blob/master/README.md#step6-config) or config.toml.sample
+See [README of Vuls](https://github.com/future-architect/vuls/blob/master/README.md#step6-config) or [config.toml.sample](https://github.com/ohsawa0515/ec2-vuls-config/blob/master/config.toml.sample)
 
 ## Usage
 
