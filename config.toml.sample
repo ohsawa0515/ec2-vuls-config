@@ -5,17 +5,12 @@ keyPath     = "/home/vuls/.ssh/id_rsa"
 
 [servers]
 
-[servers.ubuntu-server]
-host        = "192.0.2.10"
-port        = "22"
-user        = "ubuntu"
-keyPath     = "/home/ubuntu/.ssh/rd_rsa"
-
 ### Generate by ec2-vuls-config ###
 # Updated 2000-01-01T00:01:00+09:00
 
-[servers.web-server]
+[servers.web-server-1]
 host = "192.0.2.11"
 
 ### ec2-vuls-config end ###
+
 
