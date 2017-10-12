@@ -34,13 +34,13 @@ $ export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY
 $ export AWS_REGION=us-east-1
 ```
 
-### 4. Set the `Name` and `Vuls-Scan` tag to EC2 instance that you want to scan
+### 4. Set the `Name` and `vuls:scan` tag to EC2 instance that you want to scan
 
 e.g.
 
 ```
-Name: web-server-1
-Vuls-Scan: True
+Name : web-server-1
+vuls:scan : true
 ```
 
 ### 5. Prepare config.toml for Vuls scan
@@ -89,22 +89,30 @@ $ ec2-vuls-config --config path/to/config.toml
 #### --filters
 
 Filtering EC2 instances like [describe-instances command](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html).  
-Also, by default, filtering works that status is running, platform is linux and Vuls-Scan=True tag. 
-
+Also, by default, filtering works that status is running, platform is linux and `vuls:scan`:`true` tag.
 
 e.g.
 
-* To scan all instances with a Vuls-Scan=True tag (Default)
+* To scan all instances with a `vuls:scan`=`true` tag (Default)
 
 ```
-$ ec2-vuls-config --filters "Name=tag:Vuls-Scan,Values=True"
+$ ec2-vuls-config
+or
+$ ec2-vuls-config --filters "Name=tag:vuls:scan,Values=true"
 ```
 
-* To scan all instances with the web-server
+* To scan all instances with name of `web-server`
 
 ```
 $ ec2-vuls-config --filters "Name=tag:Name,Values=web-server"
 ```
+
+* To scan all instances with name of `db` and instance type `r3.large`
+
+```
+$ ec2-vuls-config --filters "Name=tag:Name,Values=db Name=instance-type,Values=r3.large"
+```
+
 
 ## Contribution
 
