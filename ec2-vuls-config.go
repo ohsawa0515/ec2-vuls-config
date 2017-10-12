@@ -1,8 +1,9 @@
 package main
 
 import (
-	"gopkg.in/urfave/cli.v1"
 	"os"
+
+	"gopkg.in/urfave/cli.v1"
 )
 
 func main() {
@@ -16,8 +17,8 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "filters, f",
-			Value: "Name=tag:Vuls-Scan,Values=True",
-			Usage: "Filtering ec2 tag",
+			Value: "",
+			Usage: "Filter options. (default: Name=tag:vuls:scan,Values=true, Name=instance-state-name,Values=running)",
 		},
 		cli.StringFlag{
 			Name:  "config, c",
@@ -28,8 +29,7 @@ func main() {
 
 	app.Action = func(c *cli.Context) error {
 
-		tag := ParseFilter(c.String("filters"))
-		instances, err := DescribeInstances(tag)
+		instances, err := DescribeInstances(c.String("filters"))
 		if err != nil {
 			return cli.NewExitError(err.Error(), 1)
 		}
