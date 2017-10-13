@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/urfave/cli.v1"
@@ -17,13 +18,21 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "filters, f",
-			Value: "",
-			Usage: "Filter options. (default: Name=tag:vuls:scan,Values=true, Name=instance-state-name,Values=running)",
+			Usage: "Filter options (default: Name=tag:vuls:scan,Values=true, Name=instance-state-name,Values=running)",
 		},
 		cli.StringFlag{
 			Name:  "config, c",
 			Value: os.Getenv("PWD") + "/config.toml",
-			Usage: "Load configuration from `FILE`",
+			Usage: "Config file path",
+		},
+		cli.StringFlag{
+			Name:  "out, o",
+			Value: os.Getenv("PWD") + "/config.toml",
+			Usage: "Output file path of config",
+		},
+		cli.BoolFlag{
+			Name:  "print, p",
+			Usage: "Echo the standard output instead of write into specified config file.",
 		},
 	}
 
@@ -40,9 +49,13 @@ func main() {
 		}
 
 		new_config := CreateConfig(GenerateServerSection(instances), config)
-		err = WriteFile(c.String("config"), new_config)
-		if err != nil {
-			return cli.NewExitError(err.Error(), 1)
+		if c.Bool("print") {
+			fmt.Println(string(new_config))
+		} else {
+			err = WriteFile(c.String("out"), new_config)
+			if err != nil {
+				return cli.NewExitError(err.Error(), 1)
+			}
 		}
 		return nil
 	}

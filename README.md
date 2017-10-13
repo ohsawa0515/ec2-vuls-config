@@ -2,6 +2,7 @@ ec2-vuls-config
 ===
 
 ec2-vuls-config is useful cli to create config file for [Vuls](https://github.com/future-architect/vuls) in Amazon EC2.
+By specifying the EC2 tag, you select the scan target Automatically and rewrite the config file.
 
 ## How to install and settings
 
@@ -51,11 +52,17 @@ See [README of Vuls](https://github.com/future-architect/vuls/blob/master/README
 
 ### Execute
 
+By default, it is filtered under the following conditions.
+
+- Status of EC2 instance is running
+- Linux (will not select Windows)
+- `vuls:scan` tag is set to `true`
+
 ```
 $ ec2-vuls-config
 ```
 
-After execute, config.toml would be generated as follows.
+After execute, config.toml would be rewrites as follows.
 
 ```
 [default]
@@ -76,30 +83,24 @@ host = "192.0.2.11"
 
 ### Options
 
-#### --config
+#### --config (-c)
 
-Specify the file path to the config.toml (Default: `$PWD/config.toml`). 
-
-e.g.
-
-```
-$ ec2-vuls-config --config path/to/config.toml
-```
-
-#### --filters
-
-Filtering EC2 instances like [describe-instances command](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html).  
-Also, by default, filtering works that status is running, platform is linux and `vuls:scan`:`true` tag.
+Specify the file path to the config.toml to be read.
+By default, `$PWD/config.toml`.
 
 e.g.
 
-* To scan all instances with a `vuls:scan`=`true` tag (Default)
+```
+$ ec2-vuls-config --config /path/to/config.toml
+```
 
-```
-$ ec2-vuls-config
-or
-$ ec2-vuls-config --filters "Name=tag:vuls:scan,Values=true"
-```
+#### --filters (-f)
+
+In addition to the default condition, it is used for further filter.
+This option like [describe-instances command](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html).
+Specify Name and Value and separate with a space.
+
+e.g.
 
 * To scan all instances with name of `web-server`
 
@@ -107,12 +108,27 @@ $ ec2-vuls-config --filters "Name=tag:vuls:scan,Values=true"
 $ ec2-vuls-config --filters "Name=tag:Name,Values=web-server"
 ```
 
-* To scan all instances with name of `db` and instance type `r3.large`
+* To scan all instances with name of `app-server` and instance type `c3.large`
 
 ```
-$ ec2-vuls-config --filters "Name=tag:Name,Values=db Name=instance-type,Values=r3.large"
+$ ec2-vuls-config --filters "Name=tag:Name,Values=app-server Name=instance-type,Values=r3.large"
 ```
 
+#### --out (-o)
+
+Specify the path of the config file to be written.
+By default, `$PWD/config.toml`.
+
+e.g.
+
+```
+$ ec2-vuls-config --out /path/to/config.toml
+```
+
+
+#### --print (-p)
+
+Echo the standard output instead of write into specified config file.
 
 ## Contribution
 
