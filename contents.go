@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/aws/aws-sdk-go/service/ec2"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"time"
+
+	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
 const (
@@ -13,41 +14,43 @@ const (
 	END   = "### ec2-vuls-config end ###"
 )
 
-func GenerateServerSection(instances []*ec2.Instance) string {
-	content := ""
+func GenerateServerSection(instances []*ec2.Instance) []byte {
+	b := make([]byte, 0, 1024)
 	for _, instance := range instances {
-		content += "[servers." + GetTagValue(instance, "Name") + "]\n"
-		content += "host = \"" + *instance.PrivateIpAddress + "\"\n"
-		content += "\n"
+		b = append(b, "[servers."+GetTagValue(instance, "Name")+"]\n"...)
+		b = append(b, "host = \""+*instance.PrivateIpAddress+"\"\n"...)
+		b = append(b, "\n"...)
 	}
-	return content
+	return b
 }
 
-func CreateConfig(content string, config string) string {
+func CreateConfig(content []byte, config []byte) []byte {
 	re := regexp.MustCompile("(?m)" + START + "[\\s\\S]*?" + END)
 
-	area := START + "\n"
-	area += "# Updated " + time.Now().Format(time.RFC3339) + "\n\n"
-	area += content
-	area += END
+	b := make([]byte, 0, 1024)
+	b = append(b, START+"\n"...)
+	b = append(b, "# Updated "+time.Now().Format(time.RFC3339)+"\n\n"...)
+	b = append(b, content...)
+	b = append(b, END...)
 
-	if re.MatchString(config) {
-		return re.ReplaceAllString(config, area)
-	} else {
-		return config + area
+	// if match, return replaced contents
+	if re.Match(config) {
+		return re.ReplaceAll(config, b)
 	}
+	config = append(config, b...)
+	return config
 }
 
-func LoadFile(path string) (string, error) {
+func LoadFile(path string) ([]byte, error) {
 	bs, err := ioutil.ReadFile(path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(bs), nil
+	return bs, nil
 }
 
-func WriteFile(path string, content string) error {
-	err := ioutil.WriteFile(path, []byte(content), os.ModePerm)
+func WriteFile(path string, content []byte) error {
+	err := ioutil.WriteFile(path, content, os.ModePerm)
 	if err != nil {
 		return err
 	}
