@@ -16,29 +16,36 @@ const (
 
 func GenerateServerSection(instances []*ec2.Instance) []byte {
 	b := make([]byte, 0, 1024)
+	b = append(b, START+"\n"...)
+	b = append(b, "# Updated "+time.Now().Format(time.RFC3339)+"\n\n"...)
 	for _, instance := range instances {
 		b = append(b, "[servers."+GetTagValue(instance, "Name")+"]\n"...)
 		b = append(b, "host = \""+*instance.PrivateIpAddress+"\"\n"...)
 		b = append(b, "\n"...)
 	}
+	b = append(b, END...)
 	return b
 }
 
-func CreateConfig(content []byte, config []byte) []byte {
+func MergeConfig(currentConfig, newConfig []byte) []byte {
+
+	// If it has already been created, it is rewrited.
 	re := regexp.MustCompile("(?m)" + START + "[\\s\\S]*?" + END)
-
-	b := make([]byte, 0, 1024)
-	b = append(b, START+"\n"...)
-	b = append(b, "# Updated "+time.Now().Format(time.RFC3339)+"\n\n"...)
-	b = append(b, content...)
-	b = append(b, END...)
-
-	// if match, return replaced contents
-	if re.Match(config) {
-		return re.ReplaceAll(config, b)
+	if re.Match(currentConfig) {
+		return re.ReplaceAll(currentConfig, newConfig)
 	}
-	config = append(config, b...)
-	return config
+
+	// If it finds servers section, it is appended.
+	re = regexp.MustCompile("(?m)\\[servers.*\\][\\s\\S]*")
+	if re.Match(currentConfig) {
+		currentConfig = append(currentConfig, newConfig...)
+		return currentConfig
+	}
+
+	// In the case that it doesn't finds servers section.
+	currentConfig = append(currentConfig, []byte("[servers]\n")...)
+	currentConfig = append(currentConfig, newConfig...)
+	return currentConfig
 }
 
 func LoadFile(path string) ([]byte, error) {

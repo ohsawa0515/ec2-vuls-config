@@ -48,7 +48,7 @@ func main() {
 			return cli.NewExitError(err.Error(), 1)
 		}
 
-		new_config := CreateConfig(GenerateServerSection(instances), config)
+		new_config := MergeConfig(config, GenerateServerSection(instances))
 		if c.Bool("print") {
 			fmt.Println(string(new_config))
 		} else {
