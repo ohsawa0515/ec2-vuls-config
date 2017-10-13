@@ -32,7 +32,7 @@ func main() {
 		},
 		cli.BoolFlag{
 			Name:  "print, p",
-			Usage: "Echo the standard output instead of apend specified config file",
+			Usage: "Echo the standard output instead of write into specified config file.",
 		},
 	}
 
