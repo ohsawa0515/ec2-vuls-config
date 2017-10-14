@@ -81,6 +81,56 @@ host = "192.0.2.11"
 ### ec2-vuls-config end ###
 ```
 
+### Tags
+
+It can be reflected in config by setting a tag such as `vuls:user`, `vuls:port` and so on.
+
+`<...>` is the name of tag.
+
+```toml
+[servers]
+
+[servers.<Name>]
+host = "<<Private IP address of instance>>"
+port = "<vuls:port>"
+user = "<vuls:user>"
+keyPath = "<vuls:keyPath>"
+
+# Set value of tag as comma-separated.
+cpeNames = [
+<vuls:cpeNames>
+]
+
+# Set value of tag as comma-separated.
+ignoreCves = [
+<vuls:ignoreCves>
+]
+
+# Example
+
+`vuls:user` => vuls
+`vuls:port` => 22
+`vuls:keyPath` => /opt/vuls/.ssh/id_rsa
+`vuls:cpeNames` => cpe:/a:rubyonrails:ruby_on_rails:4.2.7.1,cpe:/a:rubyonrails:ruby_on_rails:4.2.8,cpe:/a:rubyonrails:ruby_on_rails:5.0.1
+`vuls:ignoreCves` => CVE-2014-2913,CVE-2016-6314
+
+[servers.web-server-1]
+host = "192.0.2.11"
+user = "vuls"
+port = "22"
+keyPath = "/opt/vuls/.ssh/id_rsa"
+cpeNames = [
+"cpe:/a:rubyonrails:ruby_on_rails:4.2.7.1",
+"cpe:/a:rubyonrails:ruby_on_rails:4.2.8",
+"cpe:/a:rubyonrails:ruby_on_rails:5.0.1",
+]
+ignoreCves = [
+"CVE-2014-2913",
+"CVE-2016-6314",
+]
+```
+
+
 ### Options
 
 #### --config (-c)
