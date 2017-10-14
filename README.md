@@ -23,6 +23,8 @@ Download from [releases page](https://github.com/ohsawa0515/ec2-vuls-config/rele
 
 ```console
 $ go get -u github.com/ohsawa0515/ec2-vuls-config
+$ go get -u github.com/golang/dep/...
+$ dep ensure
 ```
 
 ## Step3. Set AWS credentials
