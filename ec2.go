@@ -92,11 +92,11 @@ func DescribeInstances(filters string) ([]*ec2.Instance, error) {
 }
 
 // GetTagValue returns value of EC2 tag.
-func GetTagValue(instance *ec2.Instance, tag_name string) string {
+func GetTagValue(instance *ec2.Instance, tagName string) *string {
 	for _, t := range instance.Tags {
-		if *t.Key == tag_name {
-			return *t.Value
+		if *t.Key == tagName {
+			return t.Value
 		}
 	}
-	return ""
+	return nil
 }
