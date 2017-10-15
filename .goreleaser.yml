@@ -1,0 +1,19 @@
+builds:
+  - binary: ec2-vuls-config
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - 386
+archive:
+  format: zip
+  name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  files:
+    - README.md
+    - README.ja.md
+release:
+  github:
+    owner: ohswa0515
+    name: ec2-vuls-config

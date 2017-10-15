@@ -1,33 +1,35 @@
 ec2-vuls-config
 ===
 
-ec2-vuls-config is useful command line tool to create config file for [Vuls](https://github.com/future-architect/vuls) in Amazon EC2.  
-By specifying the EC2 tag, you select the scan target Automatically and rewrite the config file.
+ec2-vuls-config は [Vuls](https://github.com/future-architect/vuls)スキャンのために、Amazon EC2インスタンスの情報を収集して設定ファイルを生成するのに役立つコマンドラインツールです。  
+EC2タグを指定することで、自動的にスキャン対象を選定し、設定ファイルを書き換えます。
 
 # Installation
 
-## Step1. Set the `Name` and `vuls:scan` tag to EC2 instances that you want to scan
+## Step1. スキャンしたいEC2インスタンスに`Name`タグと`vuls:scan`タグとその値を付与する
 
 ```console
 Name : web-server-1
 vuls:scan : true
 ```
 
-## Step2. Installation
+## Step2. インストール
 
 * Binary
 
-Download from [releases page](https://github.com/ohsawa0515/ec2-vuls-config/releases).
+[releases page](https://github.com/ohsawa0515/ec2-vuls-config/releases)からダウンロードできます。
 
 * Go get
 
 ```console
 $ go get -u github.com/ohsawa0515/ec2-vuls-config
+$ go get -u github.com/golang/dep/...
+$ dep ensure
 ```
 
-## Step3. Set AWS credentials
+## Step3. AWSクレデンシャルを設定
 
-Example of IAM policy:
+IAMポリシー例:
 
 ```json
 {
@@ -44,7 +46,7 @@ Example of IAM policy:
 }
 ```
 
-* Credential file (`$HOME/.aws/credentials`) 
+* Credential file (`$HOME/.aws/credentials`)
 
 ```console
 [default]
@@ -59,30 +61,30 @@ $ export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY_ID
 $ export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY
 ```
 
-## Step4. Set AWS region
+## Step4. AWSリージョンを設定
 
 ```console
 $ export AWS_REGION=us-east-1
 ```
 
 
-## Step5. Prepare config.toml for Vuls scan
+## Step5. 設定ファイル(config.toml)を用意する
 
-See [vuls#configuration](https://github.com/future-architect/vuls#configuration) or [config.toml.sample](https://github.com/ohsawa0515/ec2-vuls-config/blob/master/config.toml.sample)
+設定ファイルについては、[vuls#configuration](https://github.com/future-architect/vuls#configuration) か [config.toml.sample](https://github.com/ohsawa0515/ec2-vuls-config/blob/master/config.toml.sample) をご参照ください。
 
-## Step6. Execute
+## Step6. 実行
 
-By default, it is filtered under the following conditions.
+デフォルトで以下のフィルタ条件が適用されています。
 
-- Status of EC2 instance is running
-- Linux (will not select Windows)
-- `vuls:scan` tag is set to `true`
+- EC2インスタンスのステータスがRunning
+- Linux (Windowsは選択されない)
+- `vuls:scan` タグの値は `true` のみ
 
 ```console
 $ ec2-vuls-config
 ```
 
-After execute, config.toml would be rewrites as follows.
+実行後, 設定ファイル(config.toml)は以下のように追記されています。
 
 ```toml
 [default]
@@ -103,9 +105,9 @@ host = "192.0.2.11"
 
 # Tags
 
-It can be reflected in config by setting a tag such as `vuls:user`, `vuls:port` and so on.
+`vuls:user`、` vuls:port`などのEC2タグを設定することで、設定ファイルにに反映させることができます。
 
-`<...>` is the name of tag.
+`<...>` はタグ名です。
 
 ```toml
 [servers]
@@ -154,7 +156,7 @@ ignoreCves = [
 
 ## --config (-c)
 
-Specify the file path to the config.toml to be read.By default, `$PWD/config.toml`.
+読み込む設定ファイルのファイルパスを指定します。デフォルト: `$PWD/config.toml`
 
 ```console
 $ ec2-vuls-config --config /path/to/config.toml
@@ -162,16 +164,16 @@ $ ec2-vuls-config --config /path/to/config.toml
 
 ## --filters (-f)
 
-In addition to the default condition, it is used for further filter. This option like [describe-instances command](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html).  
-Specify set of `Name` and `Value` and separate with a space.
+デフォルトの条件に加えて、さらにフィルタリングしたい場合に使用します。フィルタリングは[describe-instances コマンド](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html)のように指定できます。
+`Name`タグと`Value`タグのセットで指定し、スペース区切りで複数指定可能。
 
-* To scan all instances with name of `web-server`
+* `web-server`というNameタグのインスタンスをスキャンしたい場合
 
 ```console
 $ ec2-vuls-config --filters "Name=tag:Name,Values=web-server"
 ```
 
-* To scan all instances with name of `app-server` and instance type `c3.large`
+* `app-server`というNameタグがついている、かつインスタンスタイプが`c3.large`のインスタンスをスキャンしたい場合
 
 ```console
 $ ec2-vuls-config --filters "Name=tag:Name,Values=app-server Name=instance-type,Values=r3.large"
@@ -179,7 +181,7 @@ $ ec2-vuls-config --filters "Name=tag:Name,Values=app-server Name=instance-type,
 
 ## --out (-o)
 
-Specify the path of the config file to be written.By default, `$PWD/config.toml`.
+設定ファイルの出力先を指定します。デフォルト: `$PWD/config.toml`
 
 ```console
 $ ec2-vuls-config --out /path/to/config.toml
@@ -188,7 +190,7 @@ $ ec2-vuls-config --out /path/to/config.toml
 
 ## --print (-p)
 
-Echo the standard output instead of write into specified config file.
+設定ファイルに書き込む代わりに標準出力します。
 
 # Contribution
 

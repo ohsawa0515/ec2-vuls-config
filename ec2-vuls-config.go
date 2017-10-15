@@ -13,7 +13,7 @@ func main() {
 	app.Usage = "Generate Vuls config by filtering the Amazon EC2 information."
 	app.Author = "Shuichi Ohsawa"
 	app.Email = "ohsawa0515@gmail.com"
-	app.Version = "0.0.1"
+	app.Version = "0.1.0"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
