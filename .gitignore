@@ -14,3 +14,4 @@
 *.iml
 config.toml
 /vendor/
+/dist/
