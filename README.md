@@ -1,7 +1,7 @@
 ec2-vuls-config
 ===
 
-ec2-vuls-config is useful command line tool to create config file for [Vuls](https://github.com/future-architect/vuls) in Amazon EC2.
+ec2-vuls-config is useful command line tool to create config file for [Vuls](https://github.com/future-architect/vuls) in Amazon EC2.  
 By specifying the EC2 tag, you select the scan target Automatically and rewrite the config file.
 
 # Installation
@@ -23,12 +23,27 @@ Download from [releases page](https://github.com/ohsawa0515/ec2-vuls-config/rele
 
 ```console
 $ go get -u github.com/ohsawa0515/ec2-vuls-config
-$ go get -u github.com/golang/dep/...
-$ dep ensure
 ```
 
 ## Step3. Set AWS credentials
- 
+
+Example of IAM policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ec2:DescribeInstances"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
 * Credential file (`$HOME/.aws/credentials`) 
 
 ```console
@@ -139,10 +154,7 @@ ignoreCves = [
 
 ## --config (-c)
 
-Specify the file path to the config.toml to be read.
-By default, `$PWD/config.toml`.
-
-e.g.
+Specify the file path to the config.toml to be read.By default, `$PWD/config.toml`.
 
 ```console
 $ ec2-vuls-config --config /path/to/config.toml
@@ -150,11 +162,8 @@ $ ec2-vuls-config --config /path/to/config.toml
 
 ## --filters (-f)
 
-In addition to the default condition, it is used for further filter.
-This option like [describe-instances command](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html).
-Specify Name and Value and separate with a space.
-
-e.g.
+In addition to the default condition, it is used for further filter. This option like [describe-instances command](http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html).  
+Specify set of `Name` and `Value` and separate with a space.
 
 * To scan all instances with name of `web-server`
 
@@ -170,10 +179,7 @@ $ ec2-vuls-config --filters "Name=tag:Name,Values=app-server Name=instance-type,
 
 ## --out (-o)
 
-Specify the path of the config file to be written.
-By default, `$PWD/config.toml`.
-
-e.g.
+Specify the path of the config file to be written.By default, `$PWD/config.toml`.
 
 ```console
 $ ec2-vuls-config --out /path/to/config.toml
