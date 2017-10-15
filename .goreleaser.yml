@@ -6,14 +6,13 @@ builds:
       - linux
     goarch:
       - amd64
-      - 386
 archive:
-  format: zip
+  format: tar.gz
   name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
   files:
     - README.md
     - README.ja.md
 release:
   github:
-    owner: ohswa0515
+    owner: ohsawa0515
     name: ec2-vuls-config
